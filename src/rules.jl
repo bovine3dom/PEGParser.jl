@@ -8,7 +8,7 @@ end
 or_default_action(rule, value, first, last, children) = children[1]
 
 # Terminal
-type Terminal <: Rule
+mutable struct Terminal <: Rule
   name::AbstractString
   value::AbstractString
   action
@@ -39,7 +39,7 @@ function parseDefinition(name::AbstractString, value::Char, pdata::ParserData)
 end
 
 # References
-type ReferencedRule <: Rule
+mutable struct ReferencedRule <: Rule
   name::AbstractString
   symbol::Symbol
   action
@@ -65,7 +65,7 @@ end
 
 
 # And
-type AndRule <: Rule
+mutable struct AndRule <: Rule
   name::AbstractString
   values::Array{Rule}
   action
@@ -106,7 +106,7 @@ end
 
 
 # Or
-type OrRule <: Rule
+mutable struct OrRule <: Rule
   name::AbstractString
   values::Array{Rule}
   action
@@ -149,7 +149,7 @@ function parseDefinition(name::AbstractString, range::UnitRange, pdata::ParserDa
 end
 
 # OneOrMore
-type OneOrMoreRule <: Rule
+mutable struct OneOrMoreRule <: Rule
   name::AbstractString
   value::Rule
   action
@@ -169,7 +169,7 @@ end
 
 
 # ZeroOrMore
-type ZeroOrMoreRule <: Rule
+mutable struct ZeroOrMoreRule <: Rule
   name::AbstractString
   value::Rule
   action
@@ -196,7 +196,7 @@ end
 
 
 # Multiple
-type MultipleRule <: Rule
+mutable struct MultipleRule <: Rule
   name::AbstractString
   value::Rule
   minCount::Int
@@ -224,7 +224,7 @@ end
 
 
 # RegEx
-type RegexRule <: Rule
+mutable struct RegexRule <: Rule
   name::AbstractString
   value::Regex
   action
@@ -251,7 +251,7 @@ end
 
 
 # Optional
-type OptionalRule <: Rule
+mutable struct OptionalRule <: Rule
   name::AbstractString
   value::Rule
   action
@@ -271,7 +271,7 @@ end
 
 
 # Look ahead
-type LookAheadRule <: Rule
+mutable struct LookAheadRule <: Rule
     name::AbstractString
     value::Rule
     action
@@ -288,7 +288,7 @@ function >(name::AbstractString, pData::ParserData, args::Array)
 end
 
 # Suppress
-type SuppressRule <: Rule
+mutable struct SuppressRule <: Rule
   name::AbstractString
   value::Rule
   action
@@ -306,7 +306,7 @@ end
 
 
 # List
-type ListRule <: Rule
+mutable struct ListRule <: Rule
   name::AbstractString
   entry::Rule
   delim::Rule
@@ -334,7 +334,7 @@ function list(name::AbstractString, pdata::ParserData, args::Array)
 end
 
 # Not
-type NotRule <: Rule
+mutable struct NotRule <: Rule
   name
   entry
   action
@@ -357,7 +357,7 @@ function empty(name::AbstractString, pdata::ParserData, args::Array)
   return EmptyRule(name)
 end
 
-type EndOfFileRule <: Rule
+mutable struct EndOfFileRule <: Rule
   name::AbstractString
   action
 
@@ -369,14 +369,14 @@ function eof(name::AbstractString, pdata::ParserData, args::Array)
 end
 
 # common parsers
-type IntegerRule <: Rule
+mutable struct IntegerRule <: Rule
   name::AbstractString
   action
 
   IntegerRule(name::AbstractString) = new(name, no_action)
 end
 
-type FloatRule <: Rule
+mutable struct FloatRule <: Rule
   name::AbstractString
   action
 
@@ -398,7 +398,7 @@ macro grammar(name, definitions)
 end
 
 # by default don't show anything
-displayValue{T <: Rule}(value, ::Type{T}) = ""
+displayValue(value, ::Type{T}) where T <: Rule = ""
 
 # except for terminals and regex
 displayValue(value, ::Type{Terminal}) = "'$value',"

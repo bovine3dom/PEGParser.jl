@@ -1,7 +1,7 @@
 using PEGParser
 using Compat
 
-immutable RangeType
+struct RangeType
   first
   last
   step

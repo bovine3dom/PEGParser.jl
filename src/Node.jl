@@ -1,6 +1,6 @@
 # include("EBNF.jl")
 
-immutable Node
+struct Node
     name::AbstractString
     value::AbstractString
     first::Int
@@ -21,7 +21,7 @@ end
 Node(name::AbstractString, value::AbstractString, first::Int, last::Int, typ) =
     Node(name, value, first, last, [], typ)
 
-show{T}(io::IO, val::T, indent) = println(io, "$val ($(typeof(val)))")
+show(io::IO, val::T, indent) where T = println(io, "$val ($(typeof(val)))")
 
 function show(io::IO, node::Node, indent)
   println(io, "node($(node.name)) {$(displayValue(node.value, node.ruleType))$(node.ruleType)}")

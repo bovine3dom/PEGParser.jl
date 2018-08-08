@@ -3,17 +3,17 @@ import Base.convert
 import Base.getindex
 #using Compat
 
-abstract Rule
+abstract type Rule end
 
 # by default no children
 get_children(rule::Rule) = []
 
-type Grammar
+mutable struct Grammar
   rules::Dict{Symbol, Rule}
 end
 
 # empty rule is also accepted and never consumes
-type EmptyRule <: Rule
+mutable struct EmptyRule <: Rule
   name
   action
 
@@ -26,7 +26,7 @@ type EmptyRule <: Rule
   end
 end
 
-type ParserData
+mutable struct ParserData
   # map of parsers to use
   parsers
 
@@ -110,7 +110,7 @@ function parseGrammar(grammar_name::Symbol, expr::Expr, pdata::ParserData)
     ref_by_name = Expr(:ref, :rules, name)
 
     rule = parseDefinition(name, definition.args[2], pdata)
-    push!(code, :(rules[$name] = $rule))
+    push!(code, :(rules[Symbol($name)] = $rule))
     all_rules = collect_rules(rule, all_rules)
   end
 

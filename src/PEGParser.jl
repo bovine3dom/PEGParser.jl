@@ -11,16 +11,16 @@ export ParserData, IntegerRule, FloatRule
 export map_symbol_to_function
 export ?, list, parseGrammar, parseDefinition, integer, float
 
-immutable ParseError
+struct ParseError
   msg::AbstractString
   pos::Int
 end
 
-type MatchRule{T} end
+mutable struct MatchRule{T} end
 
-abstract ParserCache
+abstract type ParserCache end
 
-type StandardCache <: ParserCache
+mutable struct StandardCache <: ParserCache
   values::Dict{AbstractString, Node}
 
   function StandardCache()
@@ -39,7 +39,7 @@ function parse(grammar::Grammar, text::AbstractString; cache=nothing, start=:sta
   return (ast, pos, error)
 end
 
-function parse(grammar::Grammar, rule::Rule, text::AbstractString, pos::Int, cache::Void)
+function parse(grammar::Grammar, rule::Rule, text::AbstractString, pos::Int, cache::Nothing)
   return uncached_parse(grammar, rule, text, pos, cache)
 end
 
@@ -61,7 +61,7 @@ function parse(grammar::Grammar, rule::Rule, text::AbstractString, pos::Int, cac
 end
 
 # default transform is to do nothing
-transform{T}(fn::Function, value::T) = value
+transform(fn::Function, value::T) where T = value
 
 function transform(fn::Function, node::Node)
   return transform(fn, node)
@@ -85,8 +85,8 @@ function transform(fn::Function, node::Node)
   return fn(node, transformed, label)
 end
 
-unref{T <: Any}(value::T) = [value]
-unref{T <: Rule}(node::Node, ::Type{T}) = [node]
+unref(value::T) where T <: Any = [value]
+unref(node::Node, ::Type{T}) where T <: Rule = [node]
 unref(node::Node, ::Type{ReferencedRule}) = node.children
 unref(node::Node) = unref(node, node.ruleType)
 
